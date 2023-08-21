@@ -19,7 +19,7 @@ const itemsAggregate = async (limit, page) => {
             { '$match'    : { "username": { $ne: null }} },
             { '$sort'     : { 'name': -1 } },
             { '$facet'    : {
-                metadata: [ { $count: "total" }, { $addFields: { page } } ],
+                metadata: [ { $count: "total" }],
                 data: [ { $skip: page * limit }, { $limit: limit } ] // add projection here wish you re-shape the docs
             } }
         ]).toArray();
@@ -52,9 +52,9 @@ const itemsFind = async (limit, page) => {
             "username": { $ne: null }
         });
         const total = await usersPaginated.count();
-        
+
         return {
-            data: await usersPaginated.limit(limit).skip(limit * page).toArray(),
+            data: await usersPaginated.limit(limit).skip(limit * page).sort({"name": -1}).toArray(),
             metadata: {
                 total
             }
